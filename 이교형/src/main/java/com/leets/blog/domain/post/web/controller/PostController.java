@@ -6,6 +6,7 @@ import com.leets.blog.common.response.ApiResponse;
 import com.leets.blog.domain.post.service.PostService;
 import com.leets.blog.domain.post.web.dto.request.PostCreateRequest;
 import com.leets.blog.domain.post.web.dto.request.PostUpdateRequest;
+import com.leets.blog.domain.post.web.dto.response.PostDeleteResponse;
 import com.leets.blog.domain.post.web.dto.response.PostDetailResponse;
 import com.leets.blog.domain.post.web.dto.response.PostListResponse;
 import com.leets.blog.domain.post.web.dto.response.PostResponse;
@@ -15,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -66,5 +68,14 @@ public class PostController {
             @PathVariable @BindErrorCode(ErrorCode.INVALID_POST_ID) Long postId,
             @RequestBody @Valid PostUpdateRequest request) {
         return ApiResponse.okEntity(postService.updatePost(memberId, postId, request));
+    }
+
+    @Operation(summary = "게시글 삭제", description = "본인이 작성한 게시글을 삭제합니다.")
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<ApiResponse<PostDeleteResponse>> deletePost(
+            @Parameter(description = "작성자 회원 ID (로그인 대체)", required = true)
+            @RequestHeader("X-Member-Id") @BindErrorCode(ErrorCode.UNAUTHORIZED) Long memberId,
+            @PathVariable @BindErrorCode(ErrorCode.INVALID_POST_ID) Long postId) {
+        return ApiResponse.okEntity(postService.deletePost(memberId, postId));
     }
 }

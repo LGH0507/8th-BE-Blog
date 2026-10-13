@@ -2,6 +2,7 @@ package com.leets.blog.domain.post.service;
 
 import com.leets.blog.common.exception.CustomException;
 import com.leets.blog.common.exception.ErrorCode;
+import com.leets.blog.domain.comment.repository.CommentRepository;
 import com.leets.blog.domain.member.entity.Member;
 import com.leets.blog.domain.member.repository.MemberRepository;
 import com.leets.blog.domain.post.entity.Post;
@@ -9,6 +10,7 @@ import com.leets.blog.domain.post.repository.PostRepository;
 import com.leets.blog.domain.post.web.dto.request.PostCreateRequest;
 import com.leets.blog.domain.post.web.dto.request.PostUpdateRequest;
 import com.leets.blog.domain.post.web.dto.request.PostSortType;
+import com.leets.blog.domain.post.web.dto.response.PostDeleteResponse;
 import com.leets.blog.domain.post.web.dto.response.PostDetailResponse;
 import com.leets.blog.domain.post.web.dto.response.PostListResponse;
 import com.leets.blog.domain.post.web.dto.response.PostResponse;
@@ -30,6 +32,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
+    private final CommentRepository commentRepository;
 
     // 게시글 목록 조회
     public PostListResponse getPosts(int page, int size, String sort) {
@@ -68,6 +71,15 @@ public class PostService {
         Post post = findWritablePost(memberId, postId);
         post.update(request.title(), request.content());
         return PostResponse.from(post);
+    }
+
+    // 게시글 삭제 (soft delete), 그 글의 댓글도 함께 삭제
+    @Transactional
+    public PostDeleteResponse deletePost(Long memberId, Long postId) {
+        Post post = findWritablePost(memberId, postId);
+        post.delete();
+        commentRepository.softDeleteAllByPostId(post.getId(), post.getDeletedAt());
+        return new PostDeleteResponse(post.getId());
     }
 
     private void validatePage(int page, int size) {
