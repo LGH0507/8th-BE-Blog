@@ -26,10 +26,10 @@ public class Post extends BaseEntity {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String title;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(nullable = false, columnDefinition = "MEDIUMTEXT")
     private String content;
 
     @OneToMany(mappedBy = "post")
@@ -49,6 +49,11 @@ public class Post extends BaseEntity {
 
     public void delete() {
         softDelete();
+    }
+
+    // 작성자 본인인지 확인 (수정·삭제 권한 체크)
+    public boolean isWrittenBy(Long memberId) {
+        return this.member.getId().equals(memberId);
     }
 
 }
