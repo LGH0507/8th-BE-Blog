@@ -7,8 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 
-import java.net.URI;
-
 @JsonPropertyOrder({"isSuccess", "code", "data", "error"})
 public record ApiResponse<T>(
         @JsonProperty("isSuccess") boolean isSuccess,
@@ -23,8 +21,8 @@ public record ApiResponse<T>(
     }
 
     // 201 Created
-    public static <T> ResponseEntity<ApiResponse<T>> createdEntity(URI location, T data) {
-        return ResponseEntity.created(location).body(success(HttpStatus.CREATED, data));
+    public static <T> ResponseEntity<ApiResponse<T>> createdEntity(T data) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(success(HttpStatus.CREATED, data));
     }
 
     private static <T> ApiResponse<T> success(HttpStatus status, T data) {

@@ -2,11 +2,15 @@ package com.leets.blog.domain.post.service;
 
 import com.leets.blog.common.exception.CustomException;
 import com.leets.blog.common.exception.ErrorCode;
+import com.leets.blog.domain.member.entity.Member;
+import com.leets.blog.domain.member.repository.MemberRepository;
 import com.leets.blog.domain.post.entity.Post;
 import com.leets.blog.domain.post.repository.PostRepository;
+import com.leets.blog.domain.post.web.dto.request.PostRequest;
 import com.leets.blog.domain.post.web.dto.request.PostSortType;
 import com.leets.blog.domain.post.web.dto.response.PostDetailResponse;
 import com.leets.blog.domain.post.web.dto.response.PostListResponse;
+import com.leets.blog.domain.post.web.dto.response.PostResponse;
 import com.leets.blog.domain.post.web.dto.response.PostSummaryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,6 +28,7 @@ public class PostService {
     private static final int MAX_PAGE_SIZE = 50;
 
     private final PostRepository postRepository;
+    private final MemberRepository memberRepository;
 
     // 게시글 목록 조회
     public PostListResponse getPosts(int page, int size, String sort) {
@@ -44,6 +49,18 @@ public class PostService {
         return PostDetailResponse.from(findPost(postId));
     }
 
+    // 게시글 생성
+    @Transactional
+    public PostResponse createPost(Long memberId, PostRequest request) {
+        Member member = findMember(memberId);
+        Post post = postRepository.save(Post.builder()
+                .member(member)
+                .title(request.title())
+                .content(request.content())
+                .build());
+        return PostResponse.from(post);
+    }
+
     private void validatePage(int page, int size) {
         if (page < 1) {
             throw new CustomException(ErrorCode.INVALID_PAGE_NUMBER);
@@ -60,5 +77,14 @@ public class PostService {
         }
         return postRepository.findByIdAndDeletedAtIsNull(postId)
                 .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+    }
+
+    // X-Member-Id로 받은 회원 확인, 없거나 탈퇴한 회원이면 401
+    private Member findMember(Long memberId) {
+        if (memberId < 1) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED);
+        }
+        return memberRepository.findByIdAndDeletedAtIsNull(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.UNAUTHORIZED));
     }
 }

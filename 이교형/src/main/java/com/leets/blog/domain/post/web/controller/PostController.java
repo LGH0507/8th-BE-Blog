@@ -4,14 +4,21 @@ import com.leets.blog.common.exception.BindErrorCode;
 import com.leets.blog.common.exception.ErrorCode;
 import com.leets.blog.common.response.ApiResponse;
 import com.leets.blog.domain.post.service.PostService;
+import com.leets.blog.domain.post.web.dto.request.PostRequest;
 import com.leets.blog.domain.post.web.dto.response.PostDetailResponse;
 import com.leets.blog.domain.post.web.dto.response.PostListResponse;
+import com.leets.blog.domain.post.web.dto.response.PostResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,5 +45,14 @@ public class PostController {
     public ResponseEntity<ApiResponse<PostDetailResponse>> getPost(
             @PathVariable @BindErrorCode(ErrorCode.INVALID_POST_ID) Long postId) {
         return ApiResponse.okEntity(postService.getPost(postId));
+    }
+
+    @Operation(summary = "게시글 생성", description = "게시글을 작성합니다.")
+    @PostMapping
+    public ResponseEntity<ApiResponse<PostResponse>> createPost(
+            @Parameter(description = "작성자 회원 ID (로그인 대체)", required = true)
+            @RequestHeader("X-Member-Id") @BindErrorCode(ErrorCode.UNAUTHORIZED) Long memberId,
+            @RequestBody @Valid PostRequest request) {
+        return ApiResponse.createdEntity(postService.createPost(memberId, request));
     }
 }
