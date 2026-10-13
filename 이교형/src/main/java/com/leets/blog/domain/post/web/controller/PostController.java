@@ -4,7 +4,8 @@ import com.leets.blog.common.exception.BindErrorCode;
 import com.leets.blog.common.exception.ErrorCode;
 import com.leets.blog.common.response.ApiResponse;
 import com.leets.blog.domain.post.service.PostService;
-import com.leets.blog.domain.post.web.dto.request.PostRequest;
+import com.leets.blog.domain.post.web.dto.request.PostCreateRequest;
+import com.leets.blog.domain.post.web.dto.request.PostUpdateRequest;
 import com.leets.blog.domain.post.web.dto.response.PostDetailResponse;
 import com.leets.blog.domain.post.web.dto.response.PostListResponse;
 import com.leets.blog.domain.post.web.dto.response.PostResponse;
@@ -15,6 +16,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -52,7 +54,17 @@ public class PostController {
     public ResponseEntity<ApiResponse<PostResponse>> createPost(
             @Parameter(description = "작성자 회원 ID (로그인 대체)", required = true)
             @RequestHeader("X-Member-Id") @BindErrorCode(ErrorCode.UNAUTHORIZED) Long memberId,
-            @RequestBody @Valid PostRequest request) {
+            @RequestBody @Valid PostCreateRequest request) {
         return ApiResponse.createdEntity(postService.createPost(memberId, request));
+    }
+
+    @Operation(summary = "게시글 수정", description = "본인이 작성한 게시글을 수정합니다. 바꿀 필드(title, content)만 보내면 됩니다.")
+    @PatchMapping("/{postId}")
+    public ResponseEntity<ApiResponse<PostResponse>> updatePost(
+            @Parameter(description = "작성자 회원 ID (로그인 대체)", required = true)
+            @RequestHeader("X-Member-Id") @BindErrorCode(ErrorCode.UNAUTHORIZED) Long memberId,
+            @PathVariable @BindErrorCode(ErrorCode.INVALID_POST_ID) Long postId,
+            @RequestBody @Valid PostUpdateRequest request) {
+        return ApiResponse.okEntity(postService.updatePost(memberId, postId, request));
     }
 }

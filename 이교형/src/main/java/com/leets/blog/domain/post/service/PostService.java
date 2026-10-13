@@ -6,7 +6,8 @@ import com.leets.blog.domain.member.entity.Member;
 import com.leets.blog.domain.member.repository.MemberRepository;
 import com.leets.blog.domain.post.entity.Post;
 import com.leets.blog.domain.post.repository.PostRepository;
-import com.leets.blog.domain.post.web.dto.request.PostRequest;
+import com.leets.blog.domain.post.web.dto.request.PostCreateRequest;
+import com.leets.blog.domain.post.web.dto.request.PostUpdateRequest;
 import com.leets.blog.domain.post.web.dto.request.PostSortType;
 import com.leets.blog.domain.post.web.dto.response.PostDetailResponse;
 import com.leets.blog.domain.post.web.dto.response.PostListResponse;
@@ -51,13 +52,21 @@ public class PostService {
 
     // 게시글 생성
     @Transactional
-    public PostResponse createPost(Long memberId, PostRequest request) {
+    public PostResponse createPost(Long memberId, PostCreateRequest request) {
         Member member = findMember(memberId);
         Post post = postRepository.save(Post.builder()
                 .member(member)
                 .title(request.title())
                 .content(request.content())
                 .build());
+        return PostResponse.from(post);
+    }
+
+    // 게시글 수정
+    @Transactional
+    public PostResponse updatePost(Long memberId, Long postId, PostUpdateRequest request) {
+        Post post = findWritablePost(memberId, postId);
+        post.update(request.title(), request.content());
         return PostResponse.from(post);
     }
 
@@ -86,5 +95,15 @@ public class PostService {
         }
         return memberRepository.findByIdAndDeletedAtIsNull(memberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.UNAUTHORIZED));
+    }
+
+    // 수정·삭제 공통: 회원(401) → 게시글 ID(400) → 게시글 존재(404) → 작성자(403) 순으로 확인
+    private Post findWritablePost(Long memberId, Long postId) {
+        findMember(memberId);
+        Post post = findPost(postId);
+        if (!post.isWrittenBy(memberId)) {
+            throw new CustomException(ErrorCode.POST_ACCESS_DENIED);
+        }
+        return post;
     }
 }

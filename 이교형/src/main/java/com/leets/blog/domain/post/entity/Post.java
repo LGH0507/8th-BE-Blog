@@ -42,9 +42,14 @@ public class Post extends BaseEntity {
         this.content = content;
     }
 
+    // null인 필드는 바꾸지 않음 (PATCH: 보낸 필드만 수정)
     public void update(String title, String content) {
-        this.title = title;
-        this.content = content;
+        if (title != null) {
+            this.title = title;
+        }
+        if (content != null) {
+            this.content = content;
+        }
     }
 
     public void delete() {

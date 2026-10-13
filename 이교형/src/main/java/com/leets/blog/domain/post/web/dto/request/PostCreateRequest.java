@@ -5,8 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 // 검증 message에는 응답할 ErrorCode 이름을 적음 (GlobalExceptionHandler가 변환)
-@Schema(description = "게시글 생성·수정 요청")
-public record PostRequest(
+@Schema(description = "게시글 생성 요청")
+public record PostCreateRequest(
 
         @Schema(description = "제목 (공백 불가, 100자 이하)", example = "새 게시글")
         @NotBlank(message = "REQUIRED_FIELD_MISSING")
