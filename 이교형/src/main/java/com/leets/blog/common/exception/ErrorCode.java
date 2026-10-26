@@ -18,6 +18,7 @@ public enum ErrorCode {
     REQUIRED_FIELD_MISSING(HttpStatus.BAD_REQUEST, "필수 입력값이 누락되었습니다."),
     TITLE_LENGTH_EXCEED(HttpStatus.BAD_REQUEST, "제목은 공백 포함 100자 이하여야 합니다."),
     CONTENT_LENGTH_EXCEED(HttpStatus.BAD_REQUEST, "본문은 공백 포함 100,000자 이하여야 합니다."),
+    COMMENT_LENGTH_EXCEED(HttpStatus.BAD_REQUEST, "댓글은 공백 포함 1,000자 이하여야 합니다."),
     INVALID_REPORT_REASON(HttpStatus.BAD_REQUEST, "신고 사유는 SPAM, ABUSE, ADULT, ETC 중 하나여야 합니다."),
     REPORT_DETAIL_LENGTH_EXCEED(HttpStatus.BAD_REQUEST, "신고 상세 내용은 500자 이하여야 합니다."),
     INVALID_EMAIL_FORMAT(HttpStatus.BAD_REQUEST, "이메일 형식이 올바르지 않습니다."),
@@ -29,6 +30,7 @@ public enum ErrorCode {
 
     // 403 Forbidden
     POST_ACCESS_DENIED(HttpStatus.FORBIDDEN, "본인이 작성한 게시글만 수정·삭제할 수 있습니다."),
+    COMMENT_ACCESS_DENIED(HttpStatus.FORBIDDEN, "본인이 작성한 댓글만 수정·삭제할 수 있습니다."),
     ADMIN_ONLY(HttpStatus.FORBIDDEN, "관리자만 사용할 수 있는 기능입니다."),
 
     // 404 Not Found
