@@ -30,6 +30,8 @@ public enum ErrorCode {
 
     // 409 Conflict
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다."),
+    ALREADY_HIDDEN(HttpStatus.CONFLICT, "이미 숨김 처리된 게시글입니다."),
+    REPORT_ALREADY_PROCESSED(HttpStatus.CONFLICT, "이미 처리된 신고입니다."),
 
     // 500 Internal Server Error
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "데이터 베이스 연결 실패 또는 서버 내부 오류가 발생했습니다.");
