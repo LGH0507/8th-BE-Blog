@@ -5,6 +5,7 @@ import com.leets.blog.common.exception.ErrorCode;
 import com.leets.blog.common.response.ApiResponse;
 import com.leets.blog.domain.report.service.ReportService;
 import com.leets.blog.domain.report.web.dto.request.ReportCreateRequest;
+import com.leets.blog.domain.report.web.dto.response.ReportResolveResponse;
 import com.leets.blog.domain.report.web.dto.response.ReportResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -12,13 +13,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "Report API", description = "게시글·댓글 신고 API")
+@Tag(name = "Report API", description = "게시글·댓글 신고 및 신고 처리(관리자) API")
 @RestController
 @RequiredArgsConstructor
 public class ReportController {
@@ -43,5 +45,14 @@ public class ReportController {
             @PathVariable @BindErrorCode(ErrorCode.INVALID_COMMENT_ID) Long commentId,
             @RequestBody @Valid ReportCreateRequest request) {
         return ApiResponse.createdEntity(reportService.reportComment(memberId, commentId, request));
+    }
+
+    @Operation(summary = "신고 처리 (관리자)", description = "접수된(PENDING) 신고를 처리 완료(RESOLVED)로 바꿉니다. 이미 처리된 신고는 409입니다.")
+    @PatchMapping("/reports/{reportId}/resolve")
+    public ResponseEntity<ApiResponse<ReportResolveResponse>> resolve(
+            @Parameter(description = "관리자 회원 ID (로그인 대체)", required = true)
+            @RequestHeader("X-Member-Id") @BindErrorCode(ErrorCode.UNAUTHORIZED) Long memberId,
+            @PathVariable @BindErrorCode(ErrorCode.INVALID_REPORT_ID) Long reportId) {
+        return ApiResponse.okEntity(reportService.resolve(memberId, reportId));
     }
 }

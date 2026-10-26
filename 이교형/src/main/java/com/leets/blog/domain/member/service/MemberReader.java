@@ -22,4 +22,13 @@ public class MemberReader {
         return memberRepository.findByIdAndDeletedAtIsNull(memberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.UNAUTHORIZED));
     }
+
+    // 관리자 전용 기능: 회원 확인(401) 후 관리자가 아니면 403
+    public Member getAdmin(Long memberId) {
+        Member member = getActiveMember(memberId);
+        if (!member.isAdmin()) {
+            throw new CustomException(ErrorCode.ADMIN_ONLY);
+        }
+        return member;
+    }
 }

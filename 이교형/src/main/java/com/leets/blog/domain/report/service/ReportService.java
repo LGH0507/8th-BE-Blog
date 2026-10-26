@@ -12,6 +12,7 @@ import com.leets.blog.domain.report.entity.Report;
 import com.leets.blog.domain.report.entity.ReportReason;
 import com.leets.blog.domain.report.repository.ReportRepository;
 import com.leets.blog.domain.report.web.dto.request.ReportCreateRequest;
+import com.leets.blog.domain.report.web.dto.response.ReportResolveResponse;
 import com.leets.blog.domain.report.web.dto.response.ReportResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -58,6 +59,15 @@ public class ReportService {
         return ReportResponse.from(save(Report.ofComment(reporter, comment, reason, request.detail())));
     }
 
+    // 신고 처리 (PENDING → RESOLVED): 회원(401) → 관리자(403) → 신고 ID(400) → 신고 존재(404) → 이미 처리됨(409)
+    @Transactional
+    public ReportResolveResponse resolve(Long memberId, Long reportId) {
+        memberReader.getAdmin(memberId);
+        Report report = findReport(reportId);
+        report.resolve();
+        return ReportResolveResponse.from(report);
+    }
+
     private Report save(Report report) {
         try {
             return reportRepository.save(report);
@@ -65,5 +75,14 @@ public class ReportService {
             // 같은 대상을 동시에 신고해 중복 확인을 함께 통과한 경우 (DB unique 제약에서 걸림)
             throw new CustomException(ErrorCode.DUPLICATE_REPORT);
         }
+    }
+
+    // 0 이하 ID는 400, 없는 신고는 404 (신고는 삭제 기능이 없어 deletedAt 조건 없이 조회)
+    private Report findReport(Long reportId) {
+        if (reportId < 1) {
+            throw new CustomException(ErrorCode.INVALID_REPORT_ID);
+        }
+        return reportRepository.findById(reportId)
+                .orElseThrow(() -> new CustomException(ErrorCode.REPORT_NOT_FOUND));
     }
 }
