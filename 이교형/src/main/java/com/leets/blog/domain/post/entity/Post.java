@@ -73,10 +73,14 @@ public class Post extends BaseEntity {
 
     // ACTIVE → HIDDEN (이미 숨김이면 중복 요청으로 보고 409)
     public void hide() {
-        if (this.status == PostStatus.HIDDEN) {
+        if (isHidden()) {
             throw new CustomException(ErrorCode.ALREADY_HIDDEN);
         }
         this.status = PostStatus.HIDDEN;
+    }
+
+    public boolean isHidden() {
+        return this.status == PostStatus.HIDDEN;
     }
 
     // 작성자 본인인지 확인 (수정·삭제 권한 체크)

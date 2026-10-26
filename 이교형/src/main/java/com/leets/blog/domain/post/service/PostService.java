@@ -91,13 +91,17 @@ public class PostService {
         }
     }
 
-    // 0 이하 ID는 400, 없거나 삭제된 글은 404
+    // 게시물 단건 조회 : 0 이하 ID는 400, 없거나 삭제·숨김된 글은 404 (숨김 글은 작성자도 조회·수정·삭제 불가)
     private Post findPost(Long postId) {
         if (postId < 1) {
             throw new CustomException(ErrorCode.INVALID_POST_ID);
         }
-        return postRepository.findByIdAndDeletedAtIsNull(postId)
+        Post post = postRepository.findByIdAndDeletedAtIsNull(postId)
                 .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+        if (post.isHidden()) {
+            throw new CustomException(ErrorCode.POST_NOT_FOUND);
+        }
+        return post;
     }
 
     // X-Member-Id로 받은 회원 확인, 없거나 탈퇴한 회원이면 401
