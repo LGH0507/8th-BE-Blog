@@ -12,6 +12,7 @@ import com.leets.blog.domain.post.web.dto.request.PostUpdateRequest;
 import com.leets.blog.domain.post.web.dto.request.PostSortType;
 import com.leets.blog.domain.post.web.dto.response.PostDeleteResponse;
 import com.leets.blog.domain.post.web.dto.response.PostDetailResponse;
+import com.leets.blog.domain.post.web.dto.response.PostHideResponse;
 import com.leets.blog.domain.post.web.dto.response.PostListResponse;
 import com.leets.blog.domain.post.web.dto.response.PostResponse;
 import com.leets.blog.domain.post.web.dto.response.PostSummaryResponse;
@@ -81,6 +82,16 @@ public class PostService {
         post.delete();
         commentRepository.softDeleteAllByPostId(post.getId(), post.getDeletedAt());
         return new PostDeleteResponse(post.getId());
+    }
+
+    // 게시글 숨김 (ACTIVE → HIDDEN): 회원(401) → 관리자(403) → 게시글 ID(400) → 게시글 존재(404) → 이미 숨김(409)
+    // 동시에 숨김·수정이 겹치면 @Version 충돌로 나중 요청이 409(CONCURRENT_UPDATE)
+    @Transactional
+    public PostHideResponse hidePost(Long memberId, Long postId) {
+        memberReader.getAdmin(memberId);
+        Post post = postReader.getPostIncludingHidden(postId);
+        post.hide();
+        return PostHideResponse.from(post);
     }
 
     private void validatePage(int page, int size) {

@@ -16,14 +16,19 @@ public class PostReader {
 
     // 0 이하 ID는 400, 없거나 삭제·숨김된 글은 404 (숨김 글은 작성자에게도 없는 글로 취급)
     public Post getVisiblePost(Long postId) {
-        if (postId < 1) {
-            throw new CustomException(ErrorCode.INVALID_POST_ID);
-        }
-        Post post = postRepository.findByIdAndDeletedAtIsNull(postId)
-                .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+        Post post = getPostIncludingHidden(postId);
         if (post.isHidden()) {
             throw new CustomException(ErrorCode.POST_NOT_FOUND);
         }
         return post;
+    }
+
+    // 관리자 숨김 처리용: 숨김 글도 찾아야 ALREADY_HIDDEN(409)을 줄 수 있음 (일반 조회에는 getVisiblePost 사용)
+    public Post getPostIncludingHidden(Long postId) {
+        if (postId < 1) {
+            throw new CustomException(ErrorCode.INVALID_POST_ID);
+        }
+        return postRepository.findByIdAndDeletedAtIsNull(postId)
+                .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
     }
 }
