@@ -12,12 +12,14 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Report API", description = "게시글·댓글 신고 및 신고 처리(관리자) API")
@@ -28,6 +30,7 @@ public class ReportController {
     private final ReportService reportService;
 
     @Operation(summary = "게시글 신고", description = "다른 회원의 게시글을 신고합니다. 같은 글은 한 번만 신고할 수 있습니다. reason: SPAM, ABUSE, ADULT, ETC")
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/posts/{postId}/reports")
     public ResponseEntity<ApiResponse<ReportResponse>> reportPost(
             @Parameter(description = "신고하는 회원 ID (로그인 대체)", required = true)
@@ -38,6 +41,7 @@ public class ReportController {
     }
 
     @Operation(summary = "댓글 신고", description = "다른 회원의 댓글을 신고합니다. 같은 댓글은 한 번만 신고할 수 있습니다. reason: SPAM, ABUSE, ADULT, ETC")
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/comments/{commentId}/reports")
     public ResponseEntity<ApiResponse<ReportResponse>> reportComment(
             @Parameter(description = "신고하는 회원 ID (로그인 대체)", required = true)

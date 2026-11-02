@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Comment API", description = "댓글 CRUD API")
@@ -32,6 +34,7 @@ public class CommentController {
     private final CommentService commentService;
 
     @Operation(summary = "댓글 작성", description = "게시글에 댓글을 작성합니다. 삭제·숨김된 글에는 작성할 수 없습니다.")
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/posts/{postId}/comments")
     public ResponseEntity<ApiResponse<CommentResponse>> createComment(
             @Parameter(description = "작성자 회원 ID (로그인 대체)", required = true)

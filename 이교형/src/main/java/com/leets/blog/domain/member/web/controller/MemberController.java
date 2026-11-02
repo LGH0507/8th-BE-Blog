@@ -8,10 +8,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Member API", description = "회원 API")
@@ -23,6 +25,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @Operation(summary = "회원가입", description = "회원을 등록합니다. 응답의 memberId를 게시글 API의 X-Member-Id 헤더에 사용합니다.")
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public ResponseEntity<ApiResponse<MemberSignUpResponse>> signUp(
             @RequestBody @Valid MemberSignUpRequest request) {
