@@ -24,7 +24,7 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @Operation(summary = "회원가입", description = "회원을 등록합니다. 응답의 memberId를 게시글 API의 X-Member-Id 헤더에 사용합니다.")
+    @Operation(summary = "회원가입", description = "회원을 등록합니다. 응답의 memberId를 Authorize 버튼에 넣으면 자물쇠가 표시된 API의 X-Member-Id 헤더로 사용됩니다.")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public ResponseEntity<ApiResponse<MemberSignUpResponse>> signUp(

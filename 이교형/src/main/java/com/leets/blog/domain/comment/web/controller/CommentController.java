@@ -1,5 +1,6 @@
 package com.leets.blog.domain.comment.web.controller;
 
+import com.leets.blog.common.config.SwaggerConfig;
 import com.leets.blog.common.exception.BindErrorCode;
 import com.leets.blog.common.exception.ErrorCode;
 import com.leets.blog.common.response.ApiResponse;
@@ -10,6 +11,7 @@ import com.leets.blog.domain.comment.web.dto.response.CommentListResponse;
 import com.leets.blog.domain.comment.web.dto.response.CommentResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,10 +36,11 @@ public class CommentController {
     private final CommentService commentService;
 
     @Operation(summary = "댓글 작성", description = "게시글에 댓글을 작성합니다. 삭제·숨김된 글에는 작성할 수 없습니다.")
+    @SecurityRequirement(name = SwaggerConfig.MEMBER_ID)
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/posts/{postId}/comments")
     public ResponseEntity<ApiResponse<CommentResponse>> createComment(
-            @Parameter(description = "작성자 회원 ID (로그인 대체)", required = true)
+            @Parameter(hidden = true)
             @RequestHeader("X-Member-Id") @BindErrorCode(ErrorCode.UNAUTHORIZED) Long memberId,
             @PathVariable @BindErrorCode(ErrorCode.INVALID_POST_ID) Long postId,
             @RequestBody @Valid CommentRequest request) {
@@ -54,9 +57,10 @@ public class CommentController {
     }
 
     @Operation(summary = "댓글 수정", description = "본인이 작성한 댓글을 수정합니다.")
+    @SecurityRequirement(name = SwaggerConfig.MEMBER_ID)
     @PatchMapping("/comments/{commentId}")
     public ResponseEntity<ApiResponse<CommentResponse>> updateComment(
-            @Parameter(description = "작성자 회원 ID (로그인 대체)", required = true)
+            @Parameter(hidden = true)
             @RequestHeader("X-Member-Id") @BindErrorCode(ErrorCode.UNAUTHORIZED) Long memberId,
             @PathVariable @BindErrorCode(ErrorCode.INVALID_COMMENT_ID) Long commentId,
             @RequestBody @Valid CommentRequest request) {
@@ -64,9 +68,10 @@ public class CommentController {
     }
 
     @Operation(summary = "댓글 삭제", description = "본인이 작성한 댓글을 삭제합니다.")
+    @SecurityRequirement(name = SwaggerConfig.MEMBER_ID)
     @DeleteMapping("/comments/{commentId}")
     public ResponseEntity<ApiResponse<CommentDeleteResponse>> deleteComment(
-            @Parameter(description = "작성자 회원 ID (로그인 대체)", required = true)
+            @Parameter(hidden = true)
             @RequestHeader("X-Member-Id") @BindErrorCode(ErrorCode.UNAUTHORIZED) Long memberId,
             @PathVariable @BindErrorCode(ErrorCode.INVALID_COMMENT_ID) Long commentId) {
         return ApiResponse.okEntity(commentService.deleteComment(memberId, commentId));

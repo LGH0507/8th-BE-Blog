@@ -1,5 +1,6 @@
 package com.leets.blog.domain.post.web.controller;
 
+import com.leets.blog.common.config.SwaggerConfig;
 import com.leets.blog.common.exception.BindErrorCode;
 import com.leets.blog.common.exception.ErrorCode;
 import com.leets.blog.common.response.ApiResponse;
@@ -13,6 +14,7 @@ import com.leets.blog.domain.post.web.dto.response.PostListResponse;
 import com.leets.blog.domain.post.web.dto.response.PostResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -55,19 +57,21 @@ public class PostController {
     }
 
     @Operation(summary = "게시글 생성", description = "게시글을 작성합니다.")
+    @SecurityRequirement(name = SwaggerConfig.MEMBER_ID)
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public ResponseEntity<ApiResponse<PostResponse>> createPost(
-            @Parameter(description = "작성자 회원 ID (로그인 대체)", required = true)
+            @Parameter(hidden = true)
             @RequestHeader("X-Member-Id") @BindErrorCode(ErrorCode.UNAUTHORIZED) Long memberId,
             @RequestBody @Valid PostCreateRequest request) {
         return ApiResponse.createdEntity(postService.createPost(memberId, request));
     }
 
     @Operation(summary = "게시글 수정", description = "본인이 작성한 게시글을 수정합니다. 바꿀 필드(title, content)만 보내면 됩니다.")
+    @SecurityRequirement(name = SwaggerConfig.MEMBER_ID)
     @PatchMapping("/{postId}")
     public ResponseEntity<ApiResponse<PostResponse>> updatePost(
-            @Parameter(description = "작성자 회원 ID (로그인 대체)", required = true)
+            @Parameter(hidden = true)
             @RequestHeader("X-Member-Id") @BindErrorCode(ErrorCode.UNAUTHORIZED) Long memberId,
             @PathVariable @BindErrorCode(ErrorCode.INVALID_POST_ID) Long postId,
             @RequestBody @Valid PostUpdateRequest request) {
@@ -75,18 +79,20 @@ public class PostController {
     }
 
     @Operation(summary = "게시글 삭제", description = "본인이 작성한 게시글을 삭제합니다.")
+    @SecurityRequirement(name = SwaggerConfig.MEMBER_ID)
     @DeleteMapping("/{postId}")
     public ResponseEntity<ApiResponse<PostDeleteResponse>> deletePost(
-            @Parameter(description = "작성자 회원 ID (로그인 대체)", required = true)
+            @Parameter(hidden = true)
             @RequestHeader("X-Member-Id") @BindErrorCode(ErrorCode.UNAUTHORIZED) Long memberId,
             @PathVariable @BindErrorCode(ErrorCode.INVALID_POST_ID) Long postId) {
         return ApiResponse.okEntity(postService.deletePost(memberId, postId));
     }
 
     @Operation(summary = "게시글 숨김 (관리자)", description = "게시글을 숨김(HIDDEN) 처리합니다. 숨긴 글은 목록·상세 조회, 댓글, 신고에서 제외됩니다. 이미 숨긴 글은 409입니다.")
+    @SecurityRequirement(name = SwaggerConfig.MEMBER_ID)
     @PatchMapping("/{postId}/hide")
     public ResponseEntity<ApiResponse<PostHideResponse>> hidePost(
-            @Parameter(description = "관리자 회원 ID (로그인 대체)", required = true)
+            @Parameter(hidden = true)
             @RequestHeader("X-Member-Id") @BindErrorCode(ErrorCode.UNAUTHORIZED) Long memberId,
             @PathVariable @BindErrorCode(ErrorCode.INVALID_POST_ID) Long postId) {
         return ApiResponse.okEntity(postService.hidePost(memberId, postId));
