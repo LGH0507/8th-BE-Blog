@@ -1,5 +1,7 @@
 package com.leets.blog.common.config;
 
+import com.leets.blog.common.swagger.ErrorResponse;
+import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -37,6 +39,8 @@ public class SwaggerConfig {
 
         return new OpenAPI().info(info)
                 .addServersItem(new Server().url("/"))
-                .components(new Components().addSecuritySchemes(MEMBER_ID, memberId));
+                .components(new Components()
+                        .addSecuritySchemes(MEMBER_ID, memberId)
+                        .schemas(ModelConverters.getInstance(true).readAll(ErrorResponse.class)));
     }
 }
