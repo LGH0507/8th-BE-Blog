@@ -22,7 +22,8 @@ public enum ErrorCode {
     INVALID_REPORT_REASON(HttpStatus.BAD_REQUEST, "신고 사유는 SPAM, ABUSE, ADULT, ETC 중 하나여야 합니다."),
     REPORT_DETAIL_LENGTH_EXCEED(HttpStatus.BAD_REQUEST, "신고 상세 내용은 500자 이하여야 합니다."),
     INVALID_EMAIL_FORMAT(HttpStatus.BAD_REQUEST, "이메일 형식이 올바르지 않습니다."),
-    INVALID_MEMBER_INPUT(HttpStatus.BAD_REQUEST, "이름·이메일은 50자 이하, 비밀번호는 8~64자, 나이는 0~127 사이여야 합니다."),
+    INVALID_PASSWORD_FORMAT(HttpStatus.BAD_REQUEST, "비밀번호는 8~64자여야 합니다. (한글은 24자까지)"),
+    INVALID_NICKNAME(HttpStatus.BAD_REQUEST, "닉네임은 2~20자여야 합니다."),
     CANNOT_REPORT_OWN_CONTENT(HttpStatus.BAD_REQUEST, "본인이 작성한 게시글·댓글은 신고할 수 없습니다."),
 
     // 401 Unauthorized
@@ -40,6 +41,7 @@ public enum ErrorCode {
 
     // 409 Conflict
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다."),
+    DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "이미 사용 중인 닉네임입니다."),
     ALREADY_HIDDEN(HttpStatus.CONFLICT, "이미 숨김 처리된 게시글입니다."),
     REPORT_ALREADY_PROCESSED(HttpStatus.CONFLICT, "이미 처리된 신고입니다."),
     DUPLICATE_REPORT(HttpStatus.CONFLICT, "이미 신고한 대상입니다."),
