@@ -67,9 +67,4 @@ public class Member extends BaseEntity {
     public void delete() {
         softDelete();
     }
-
-    // 관리자 권한 확인 (신고 처리·게시글 숨김)
-    public boolean isAdmin() {
-        return this.role == MemberRole.ADMIN;
-    }
 }
