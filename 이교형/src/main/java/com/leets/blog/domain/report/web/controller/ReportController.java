@@ -36,7 +36,7 @@ public class ReportController {
     @ApiErrorCodes({ErrorCode.INVALID_POST_ID, ErrorCode.REQUIRED_FIELD_MISSING, ErrorCode.INVALID_REPORT_REASON,
             ErrorCode.REPORT_DETAIL_LENGTH_EXCEED, ErrorCode.CANNOT_REPORT_OWN_CONTENT, ErrorCode.UNAUTHORIZED,
             ErrorCode.INVALID_TOKEN, ErrorCode.EXPIRED_TOKEN, ErrorCode.POST_NOT_FOUND, ErrorCode.DUPLICATE_REPORT})
-    @SecurityRequirement(name = SwaggerConfig.MEMBER_ID)
+    @SecurityRequirement(name = SwaggerConfig.BEARER)
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/posts/{postId}/reports")
     public ResponseEntity<ApiResponse<ReportResponse>> reportPost(
@@ -50,7 +50,7 @@ public class ReportController {
     @ApiErrorCodes({ErrorCode.INVALID_COMMENT_ID, ErrorCode.REQUIRED_FIELD_MISSING, ErrorCode.INVALID_REPORT_REASON,
             ErrorCode.REPORT_DETAIL_LENGTH_EXCEED, ErrorCode.CANNOT_REPORT_OWN_CONTENT, ErrorCode.UNAUTHORIZED,
             ErrorCode.INVALID_TOKEN, ErrorCode.EXPIRED_TOKEN, ErrorCode.COMMENT_NOT_FOUND, ErrorCode.DUPLICATE_REPORT})
-    @SecurityRequirement(name = SwaggerConfig.MEMBER_ID)
+    @SecurityRequirement(name = SwaggerConfig.BEARER)
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/comments/{commentId}/reports")
     public ResponseEntity<ApiResponse<ReportResponse>> reportComment(
@@ -64,7 +64,7 @@ public class ReportController {
     @ApiErrorCodes({ErrorCode.INVALID_REPORT_ID, ErrorCode.UNAUTHORIZED, ErrorCode.INVALID_TOKEN,
             ErrorCode.EXPIRED_TOKEN, ErrorCode.ADMIN_ONLY, ErrorCode.REPORT_NOT_FOUND,
             ErrorCode.REPORT_ALREADY_PROCESSED})
-    @SecurityRequirement(name = SwaggerConfig.MEMBER_ID)
+    @SecurityRequirement(name = SwaggerConfig.BEARER)
     @PatchMapping("/reports/{reportId}/resolve")
     public ResponseEntity<ApiResponse<ReportResolveResponse>> resolve(
             @Parameter(hidden = true) @AuthenticationPrincipal Long memberId,

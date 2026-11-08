@@ -39,7 +39,7 @@ public class CommentController {
     @Operation(summary = "댓글 작성", description = "게시글에 댓글을 작성합니다. 삭제·숨김된 글에는 작성할 수 없습니다.")
     @ApiErrorCodes({ErrorCode.INVALID_POST_ID, ErrorCode.REQUIRED_FIELD_MISSING, ErrorCode.COMMENT_LENGTH_EXCEED,
             ErrorCode.UNAUTHORIZED, ErrorCode.INVALID_TOKEN, ErrorCode.EXPIRED_TOKEN, ErrorCode.POST_NOT_FOUND})
-    @SecurityRequirement(name = SwaggerConfig.MEMBER_ID)
+    @SecurityRequirement(name = SwaggerConfig.BEARER)
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/posts/{postId}/comments")
     public ResponseEntity<ApiResponse<CommentResponse>> createComment(
@@ -64,7 +64,7 @@ public class CommentController {
     @ApiErrorCodes({ErrorCode.INVALID_COMMENT_ID, ErrorCode.REQUIRED_FIELD_MISSING, ErrorCode.COMMENT_LENGTH_EXCEED,
             ErrorCode.UNAUTHORIZED, ErrorCode.INVALID_TOKEN, ErrorCode.EXPIRED_TOKEN, ErrorCode.COMMENT_ACCESS_DENIED,
             ErrorCode.COMMENT_NOT_FOUND})
-    @SecurityRequirement(name = SwaggerConfig.MEMBER_ID)
+    @SecurityRequirement(name = SwaggerConfig.BEARER)
     @PatchMapping("/comments/{commentId}")
     public ResponseEntity<ApiResponse<CommentResponse>> updateComment(
             @Parameter(hidden = true) @AuthenticationPrincipal Long memberId,
@@ -76,7 +76,7 @@ public class CommentController {
     @Operation(summary = "댓글 삭제", description = "본인이 작성한 댓글을 삭제합니다.")
     @ApiErrorCodes({ErrorCode.INVALID_COMMENT_ID, ErrorCode.UNAUTHORIZED, ErrorCode.INVALID_TOKEN,
             ErrorCode.EXPIRED_TOKEN, ErrorCode.COMMENT_ACCESS_DENIED, ErrorCode.COMMENT_NOT_FOUND})
-    @SecurityRequirement(name = SwaggerConfig.MEMBER_ID)
+    @SecurityRequirement(name = SwaggerConfig.BEARER)
     @DeleteMapping("/comments/{commentId}")
     public ResponseEntity<ApiResponse<CommentDeleteResponse>> deleteComment(
             @Parameter(hidden = true) @AuthenticationPrincipal Long memberId,

@@ -62,7 +62,7 @@ public class PostController {
     @Operation(summary = "게시글 생성", description = "게시글을 작성합니다.")
     @ApiErrorCodes({ErrorCode.REQUIRED_FIELD_MISSING, ErrorCode.TITLE_LENGTH_EXCEED, ErrorCode.CONTENT_LENGTH_EXCEED,
             ErrorCode.UNAUTHORIZED, ErrorCode.INVALID_TOKEN, ErrorCode.EXPIRED_TOKEN})
-    @SecurityRequirement(name = SwaggerConfig.MEMBER_ID)
+    @SecurityRequirement(name = SwaggerConfig.BEARER)
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public ResponseEntity<ApiResponse<PostResponse>> createPost(
@@ -75,7 +75,7 @@ public class PostController {
     @ApiErrorCodes({ErrorCode.INVALID_POST_ID, ErrorCode.REQUIRED_FIELD_MISSING, ErrorCode.TITLE_LENGTH_EXCEED,
             ErrorCode.CONTENT_LENGTH_EXCEED, ErrorCode.UNAUTHORIZED, ErrorCode.INVALID_TOKEN, ErrorCode.EXPIRED_TOKEN,
             ErrorCode.POST_ACCESS_DENIED, ErrorCode.POST_NOT_FOUND, ErrorCode.CONCURRENT_UPDATE})
-    @SecurityRequirement(name = SwaggerConfig.MEMBER_ID)
+    @SecurityRequirement(name = SwaggerConfig.BEARER)
     @PatchMapping("/{postId}")
     public ResponseEntity<ApiResponse<PostResponse>> updatePost(
             @Parameter(hidden = true) @AuthenticationPrincipal Long memberId,
@@ -87,7 +87,7 @@ public class PostController {
     @Operation(summary = "게시글 삭제", description = "본인이 작성한 게시글을 삭제합니다.")
     @ApiErrorCodes({ErrorCode.INVALID_POST_ID, ErrorCode.UNAUTHORIZED, ErrorCode.INVALID_TOKEN, ErrorCode.EXPIRED_TOKEN,
             ErrorCode.POST_ACCESS_DENIED, ErrorCode.POST_NOT_FOUND, ErrorCode.CONCURRENT_UPDATE})
-    @SecurityRequirement(name = SwaggerConfig.MEMBER_ID)
+    @SecurityRequirement(name = SwaggerConfig.BEARER)
     @DeleteMapping("/{postId}")
     public ResponseEntity<ApiResponse<PostDeleteResponse>> deletePost(
             @Parameter(hidden = true) @AuthenticationPrincipal Long memberId,
@@ -98,7 +98,7 @@ public class PostController {
     @Operation(summary = "게시글 숨김 (관리자)", description = "게시글을 숨김(HIDDEN) 처리합니다. 숨긴 글은 목록·상세 조회, 댓글, 신고에서 제외됩니다. 이미 숨긴 글은 409입니다.")
     @ApiErrorCodes({ErrorCode.INVALID_POST_ID, ErrorCode.UNAUTHORIZED, ErrorCode.INVALID_TOKEN, ErrorCode.EXPIRED_TOKEN,
             ErrorCode.ADMIN_ONLY, ErrorCode.POST_NOT_FOUND, ErrorCode.ALREADY_HIDDEN, ErrorCode.CONCURRENT_UPDATE})
-    @SecurityRequirement(name = SwaggerConfig.MEMBER_ID)
+    @SecurityRequirement(name = SwaggerConfig.BEARER)
     @PatchMapping("/{postId}/hide")
     public ResponseEntity<ApiResponse<PostHideResponse>> hidePost(
             @Parameter(hidden = true) @AuthenticationPrincipal Long memberId,
