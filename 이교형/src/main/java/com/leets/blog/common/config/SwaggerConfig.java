@@ -32,6 +32,8 @@ public class SwaggerConfig {
                         5. 관리자 API(게시글 숨김, 신고 처리)는 role이 ADMIN인 회원만 호출할 수 있습니다. \
                         회원가입으로는 ADMIN을 만들 수 없으므로 DB에서 `UPDATE members SET role = 'ADMIN' WHERE id = 1;`처럼 \
                         바꾼 뒤 **다시 로그인**해야 토큰에 반영됩니다.
+                        6. 카카오 로그인은 브라우저 리다이렉트와 쿠키가 필요해 Swagger에서는 실행되지 않습니다. \
+                        브라우저 주소창에 `/auth/kakao/login`을 직접 입력하면 로그인 후 토큰 JSON이 표시됩니다.
                         """)
                 .version("0.0.1");
 

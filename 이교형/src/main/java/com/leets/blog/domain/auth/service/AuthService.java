@@ -69,6 +69,7 @@ public class AuthService {
             throw new CustomException(ErrorCode.INVALID_CREDENTIALS);
         }
         Member member = memberRepository.findByEmailAndDeletedAtIsNull(request.email())
+                .filter(Member::hasPassword)   // 카카오로만 가입한 회원은 비밀번호 로그인 불가
                 .filter(m -> passwordEncoder.matches(request.password(), m.getPassword()))
                 .orElseThrow(() -> new CustomException(ErrorCode.INVALID_CREDENTIALS));
         return issueTokens(member);

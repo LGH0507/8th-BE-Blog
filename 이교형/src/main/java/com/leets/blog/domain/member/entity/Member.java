@@ -64,6 +64,16 @@ public class Member extends BaseEntity {
         return new Member(email, encodedPassword, nickname);
     }
 
+    // 카카오 최초 로그인 시 자동 가입 (비밀번호 없음, 이메일은 없을 수 있음)
+    public static Member createSocial(String email, String nickname) {
+        return new Member(email, null, nickname);
+    }
+
+    // 카카오로만 가입한 회원은 이메일·비밀번호 로그인 불가
+    public boolean hasPassword() {
+        return this.password != null;
+    }
+
     public void delete() {
         softDelete();
     }
